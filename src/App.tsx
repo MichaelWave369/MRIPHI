@@ -4,6 +4,8 @@ import { axisIndex, makeDemoVolume, readNifti, type Axis, type Position, type Vo
 import { paintSlice, positionFromCanvas, sliceSize } from './lib/viewer';
 import { gridToWorld, spatialCenter, worldToGrid } from './lib/spatial';
 import { Stage3D } from './Stage3D';
+import { ScanInspector } from './ScanInspector';
+import type { Marks } from './lib/inspector';
 import './styles.css';
 
 type Tab = 'explorer' | 'atlas' | 'about';
@@ -205,6 +207,7 @@ export default function App() {
   const [regionId, setRegionId] = useState<RegionKey>('hippocampus');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [marks, setMarks] = useState<Marks>({ A: null, B: null });
   const pickerRef = useRef<HTMLInputElement>(null);
   const region = REGIONS.find((item) => item.id === regionId)!;
 
@@ -213,6 +216,7 @@ export default function App() {
     const demo = makeDemoVolume();
     setVolume(demo);
     setPosition(spatialCenter(demo.spatial));
+    setMarks({ A: null, B: null });
     setBrightness(50);
     setContrast(55);
     setError('');
@@ -229,6 +233,7 @@ export default function App() {
       const next = await readNifti(file);
       setVolume(next);
       setPosition(spatialCenter(next.spatial));
+      setMarks({ A: null, B: null });
       setBrightness(50);
       setContrast(55);
       setTab('explorer');
@@ -309,6 +314,16 @@ export default function App() {
           </div>
           <p className="slice-instruction">WATCH THE 3D STAGE UPDATE AS YOU MOVE A SLIDER · MOVE A SLIDER TO SCROLL THROUGH A PLANE · CLICK AN IMAGE TO REPOSITION THE SHARED CROSSHAIR · EXPORT ANY VIEW AS PNG</p>
 
+          <ScanInspector
+            volume={volume}
+            position={position}
+            marks={marks}
+            onMark={(key) => setMarks((old) => ({
+              ...old,
+              [key]: { world: { ...position }, capturedAt: new Date().toISOString() },
+            }))}
+            onClear={() => setMarks({ A: null, B: null })}
+          />
           <div className="bottom-grid">
             <section className="control-card">
               <div className="card-heading"><span className="panel-number">A /</span><h3>Image controls</h3><span className="mini-tag">DISPLAY ONLY</span></div>

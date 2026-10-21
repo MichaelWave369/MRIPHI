@@ -61,3 +61,48 @@
 @media(max-width:700px){.stage-layout{grid-template-columns:1fr}.stage-viewport{height:370px}.stage-controls{border-left:0;border-top:1px solid #30435a;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.stage-control-group+.stage-control-group{border-top:0;padding-top:0}.stage-control-group:last-child{grid-column:1/-1}.stage-camera-presets{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:480px){.stage-heading{flex-direction:column;gap:8px}.stage-heading .mini-tag{margin-left:0}.stage-viewport{height:320px}.stage-view-label{top:12px;left:12px;font-size:8px}.stage-axis-hint{bottom:24px;left:12px;font-size:8px}.stage-drag-hint{bottom:9px;left:12px;right:auto;font-size:8px}.stage-controls{grid-template-columns:1fr;gap:15px}.stage-control-group:last-child{grid-column:auto}.stage-control-group+.stage-control-group{border-top:1px solid #2b4055;padding-top:15px}.stage-slice-divider{flex-direction:column;align-items:flex-start;font-size:9px;margin-top:24px;gap:7px}}
 @media(prefers-reduced-motion:reduce){.stage-world,.stage-plane{transition:none!important;animation:none!important}}
+
+/* R3 reproducible, local-only MRI scan inspection */
+.inspector-panel{border:1px solid #345361;background:linear-gradient(155deg,#122334,#0a1525);border-radius:9px;margin:24px 0 26px;overflow:hidden}
+.inspector-heading{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:26px 26px 22px;border-bottom:1px solid #30485b}
+.inspector-heading h3{font-size:clamp(25px,3vw,35px);letter-spacing:-1.3px;margin:8px 0}
+.inspector-heading p{font-size:12px;line-height:1.7;color:#a4b7c7;max-width:625px;margin:5px 0 0}
+.inspector-heading .mini-tag{white-space:nowrap;margin:7px 0 0}
+.inspector-grid{display:grid;grid-template-columns:1fr 1.12fr 1.12fr;gap:1px;background:#314456}
+.inspector-card{background:#111d2c;padding:22px;min-width:0;display:flex;flex-direction:column}
+.inspector-card-head{display:flex;gap:9px;align-items:center;margin-bottom:21px}
+.inspector-card-head>strong{font-size:14px;letter-spacing:.1px}
+.inspector-light{display:block;width:6px;height:6px;border-radius:50%;background:#8ce0c2;box-shadow:0 0 8px #88e4c2aa;margin-left:auto}
+.inspector-meta{font-size:9px;color:#a2d8be;letter-spacing:1.35px;font-weight:750}
+.inspector-primary{font-size:clamp(17px,2vw,25px);letter-spacing:-.5px;color:#e4f4ed;font-variant-numeric:tabular-nums;padding:13px 0 18px;border-bottom:1px solid #304458}
+.inspector-field-list{display:flex;flex-direction:column;gap:0}
+.inspector-field-list>div{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:10px 0;border-bottom:1px solid #2b405140}
+.inspector-field-list span{color:#92a8ba;font-size:11px;line-height:1.5}
+.inspector-field-list strong{font-family:ui-monospace,Consolas,monospace;font-size:11px;text-align:right;color:#c2e8dc;font-weight:650;overflow-wrap:anywhere}
+.inspector-footnote{margin:auto 0 0;padding-top:21px;font-size:11px;line-height:1.7;color:#92a8b9}
+.inspector-histogram{height:170px;border:1px solid #2e4457;background:linear-gradient(#091522cc,#142838ee);padding:8px 8px 0;position:relative}
+.inspector-histogram svg{display:block;width:100%;height:100%}
+.inspector-chart-labels{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0 13px;color:#a5bfd1;font-size:10px;font-family:ui-monospace,monospace}
+.inspector-chart-labels span:nth-child(2){font-family:inherit;color:#799cab;font-size:8px;letter-spacing:1px;text-align:center}
+.inspector-mark-actions{display:flex;gap:8px;flex-wrap:wrap}
+.inspector-mark{border-radius:4px;padding:11px 10px;font-size:10px;font-weight:800;letter-spacing:.4px;border:1px solid #7ac8a9;background:#1a363a;color:#a8efd0;flex:1}
+.inspector-mark.mark-b{border-color:#8ab9df;background:#1e3042;color:#b9daf1}
+.inspector-mark:hover{filter:brightness(1.22)}
+.inspector-mark:disabled{opacity:.5}
+.inspector-marked{display:grid;gap:8px;margin:18px 0}
+.inspector-marked>div{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid #324859;background:#142235;border-radius:5px}
+.inspector-marked span{font-size:12px;font-weight:900;color:#9be5c5}
+.inspector-marked>div:nth-child(2) span{color:#8bc3e9}
+.inspector-marked strong{font-family:ui-monospace,Consolas,monospace;font-weight:500;font-size:11px;color:#cddbe5;overflow-wrap:anywhere}
+.inspector-distance{display:flex;flex-direction:column;gap:10px;background:#0c1929;padding:14px;border-radius:5px;border:1px solid #2d4658}
+.inspector-distance>span{font-size:9px;letter-spacing:1.1px;color:#8ca4b3}
+.inspector-distance strong{font-size:24px;font-variant-numeric:tabular-nums;color:#a2efd1;overflow-wrap:anywhere}
+.inspector-distance small{font-size:11px;color:#a3b9c7;font-weight:600}
+.inspector-export-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+.inspector-export-actions .primary-action{font-size:10px;padding:0 12px;min-height:39px;flex:1}
+.inspector-reset{border:1px solid #47576b;background:#182538;color:#b3c4d3;padding:0 11px;border-radius:4px;min-height:39px;font-weight:700;font-size:10px}
+.inspector-reset:hover{border-color:#b2d5e6}
+.inspector-reset:disabled{opacity:.35;cursor:not-allowed}
+.inspector-privacy{color:#a1b0bf;font-size:10px;line-height:1.6;margin:14px 0 0}
+@media(max-width:1130px){.inspector-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.inspector-card:last-child{grid-column:1/-1}.inspector-card{padding:18px}}
+@media(max-width:750px){.inspector-grid{grid-template-columns:1fr}.inspector-card:last-child{grid-column:auto}.inspector-heading{flex-direction:column;padding:20px}.inspector-heading .mini-tag{margin:0}.inspector-card{padding:20px}}
