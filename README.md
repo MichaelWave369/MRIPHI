@@ -6,6 +6,17 @@ MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in Re
 
 > **Important:** MRIPHI is an educational/research exploration project, **not a medical device**. It does not diagnose disease, quantify regional brain volumes, segment anatomical structures, or assess cognition. The sample phantom is computer-generated and is not a human MRI.
 
+## R2 capabilities
+
+- **Interactive 3D tri-plane stage:** a rotatable, browser-only display of the three intersecting axial/coronal/sagittal slices in a shared RAS+ world space (or visibly labeled synthetic/unverified space).
+- **Synchronizes with 2D slice sliders** and window/contrast settings, because both views use the same R1 world-aligned slice sampler.
+- **Display controls:** drag/touch to orbit, arrow-key rotation, named front/top/isometric camera presets, zoom slider, and toggles for each plane (with at least one remaining visible).
+- **Physical geometry:** plane dimensions reflect world-space scan bounds and non-isotropic voxel spacing. The 3D scene transforms RAS+ coordinates to CSS 3D axes without changing source data.
+- **Regression tests** cover plane proportions, crosshair placement, clipping, and oblique data.
+- **No dependencies or network calls** beyond the existing React/Vite application.
+
+This is an **orthogonal multiplanar slice display**, not a volumetric 3D tissue reconstruction, brain surface model, tumor segmentation, or measurement tool. Overlapping planes can obscure one another, and the synthetic brain phantom remains explicitly nonhuman.
+
 ## R1 capabilities
 
 - **RAS+ world-aligned reslicing** from valid NIfTI-1 sform (preferred) or qform, including rotated, flipped, and oblique volumes.
@@ -26,7 +37,7 @@ MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in Re
 ## Use
 
 1. Open the GitHub Pages site once deployed, or start the development server.
-2. Explore the **SYNTHETIC DEMO** by moving sliders or clicking any image.
+2. Explore the **SYNTHETIC DEMO** by moving sliders or clicking any image; drag the 3D stage to orbit the three shared slice planes.
 3. Choose **Open an MRI file** to load a NIfTI-1 single-volume scan from your computer. Files remain in your current browser tab. No files are uploaded by the application.
 4. Save any displayed image with the download control on the slice card.
 
@@ -47,6 +58,7 @@ The production build uses the `/MRIPHI/` base path for GitHub Pages. The include
 
 - **Orientation:** Valid NIfTI-1 **sform** takes precedence over **qform**. A qform quaternion is used if sform is absent or unusable. Both map voxel coordinates to RAS+ world coordinates. The three views are rendered on RAS+ world-aligned planes (including oblique volumes), using trilinear interpolation. Patient-direction labels use the **neurological display convention**: image right is patient right. Incorrect metadata will produce incorrect orientation: MRIPHI cannot independently check scanner metadata or patient orientation. Missing/invalid transforms are shown as **UNVERIFIED** voxel axes with no anatomical direction labels.
 - **Physical units:** Header meter, millimeter, and micrometer flags are converted to mm. If the spatial unit is unspecified, screen coordinates are flagged **assumed mm**, not independently validated.
+- **3D stage:** An exploratory 3D display of three 2D resampled MRI slices. There is no 3D surface extraction, volumetric ray-casting, or image interpretation; the chosen camera angle never changes scientific voxel coordinates.
 - **Resampling:** Original voxel data are preserved. Resampled slices are generated on demand, at no more than 384 points per axis for browser performance; rendered images are not intended for quantitative measurement.
 - **Formats:** Single-file NIfTI-1, one 3D scalar volume. No DICOM, NIfTI-2, multichannel RGB images, or 4D/time-series yet.
 - **Size:** Maximum 180 MB input, 220 MB decompressed data, and 25 million voxels, to protect browser memory.

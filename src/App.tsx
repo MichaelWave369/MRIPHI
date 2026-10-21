@@ -3,6 +3,7 @@ import type * as React from 'react';
 import { axisIndex, makeDemoVolume, readNifti, type Axis, type Position, type Volume } from './lib/volume';
 import { paintSlice, positionFromCanvas, sliceSize } from './lib/viewer';
 import { gridToWorld, spatialCenter, worldToGrid } from './lib/spatial';
+import { Stage3D } from './Stage3D';
 import './styles.css';
 
 type Tab = 'explorer' | 'atlas' | 'about';
@@ -298,13 +299,15 @@ export default function App() {
             <strong>{volume.spatial.source === 'demo' ? 'SYNTHETIC COORDINATES' : volume.spatial.source === 'unverified' ? 'UNVERIFIED · NO VALID AFFINE' : volume.spatial.source.toUpperCase() + ' · RAS+'}</strong>
             <span>{volume.spatial.units === 'mm' ? 'MILLIMETERS' : 'UNITS ASSUMED MM'} · {volume.spatial.oblique ? 'OBLIQUE RESLICE' : 'AXIS-ALIGNED'} · TRILINEAR</span>
           </div>
+          <Stage3D volume={volume} position={position} brightness={brightness} contrast={contrast} />
+          <div className="stage-slice-divider"><span>THE THREE CROSS-SECTION VIEWS</span><span>SCROLL BELOW TO MOVE THE 3D PLANES</span></div>
           <div className="slice-grid">
             {AXES.map((spec) => (
               <SlicePanel key={spec.axis} {...spec} volume={volume} position={position}
                 onMove={onMove} brightness={brightness} contrast={contrast} />
             ))}
           </div>
-          <p className="slice-instruction">MOVE A SLIDER TO SCROLL THROUGH A PLANE · CLICK AN IMAGE TO REPOSITION THE SHARED CROSSHAIR · EXPORT ANY VIEW AS PNG</p>
+          <p className="slice-instruction">WATCH THE 3D STAGE UPDATE AS YOU MOVE A SLIDER · MOVE A SLIDER TO SCROLL THROUGH A PLANE · CLICK AN IMAGE TO REPOSITION THE SHARED CROSSHAIR · EXPORT ANY VIEW AS PNG</p>
 
           <div className="bottom-grid">
             <section className="control-card">
