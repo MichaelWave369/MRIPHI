@@ -6,6 +6,17 @@ MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in Re
 
 > **Important:** MRIPHI is an educational/research exploration project, **not a medical device**. It does not diagnose disease, quantify regional brain volumes, segment anatomical structures, or assess cognition. The sample phantom is computer-generated and is not a human MRI.
 
+## R3 capabilities: Scan Inspector
+
+- **Live crosshair probing:** View the world coordinate, continuous voxel index, nearest voxel index, raw scanner intensity, and tri-linearly interpolated intensity at the cursor. Values use the original R1 transform and R2 shared position, without touching the source image.
+- **64-bin intensity histogram:** A bounded deterministic sample of the loaded voxels across the existing display intensity window (approximate 1st–99th percentile). Outliers and invalid samples are counted separately. The visualization uses a square-root scale; histogram counts are not tissue-class estimates.
+- **Point A / Point B ledger:** Capture the current shared crosshair at two positions, preserve each mark while scrolling through the scan, then compare Euclidean world-coordinate distance.
+- **Honest spatial units:** Only a valid NIfTI sform/qform **with explicit physical length units** can display **mm (header-reported)**. Missing units, unreliable orientation, and the synthetic demo show **unverified** or **synthetic** units rather than inventing millimeters. MRIPHI still cannot independently verify the correctness of even a valid header.
+- **Portable JSON research receipt:** Export a human-readable, locally generated receipt containing the dataset filename, synthetic/real provenance, orientation source, affine, captured points, probe values, uncertainty, and warnings. No raw image array or diagnostic interpretation is exported.
+- All state is local to the tab. Importing a new volume or resetting the demo **clears old point markers** to avoid cross-dataset contamination.
+
+These features are for education and reproducible exploration, not medical measurement or automated diagnostic analysis. Scanner intensity values cannot automatically identify tissue, damage, or disease. The JSON includes a filename which **may identify a person**; always review it before sharing.
+
 ## R2 capabilities
 
 - **Interactive 3D tri-plane stage:** a rotatable, browser-only display of the three intersecting axial/coronal/sagittal slices in a shared RAS+ world space (or visibly labeled synthetic/unverified space).
@@ -37,9 +48,9 @@ This is an **orthogonal multiplanar slice display**, not a volumetric 3D tissue 
 ## Use
 
 1. Open the GitHub Pages site once deployed, or start the development server.
-2. Explore the **SYNTHETIC DEMO** by moving sliders or clicking any image; drag the 3D stage to orbit the three shared slice planes.
+2. Explore the **SYNTHETIC DEMO** by moving sliders or clicking any image; drag the 3D stage to orbit the three shared slice planes. Inspect live voxel intensities and the histogram beneath the slice views.
 3. Choose **Open an MRI file** to load a NIfTI-1 single-volume scan from your computer. Files remain in your current browser tab. No files are uploaded by the application.
-4. Save any displayed image with the download control on the slice card.
+4. Save any displayed image with the download control on the slice card. Move the cursor to two distinct positions and choose **Capture Point A** / **Capture Point B** in the Scan Inspector. Export the **JSON receipt** when finished.
 
 ## Develop
 
@@ -65,6 +76,7 @@ The production build uses the `/MRIPHI/` base path for GitHub Pages. The include
 - **Contrast:** The UI uses a sampled 1st/99th percentile intensity range; window controls modify only the rendered grayscale display. The underlying volume is unchanged.
 - **Atlas:** The brain drawing is an *illustration*, not a voxel-space anatomical overlay or segmentation result.
 - **Privacy:** Local file selection is browser-side only. MRIPHI does not include any network upload, telemetry, or storage service. Avoid sharing screenshots that might contain identifying scan information.
+- **Scan Inspector limitations:** Point-to-point distances are between user-selected world coordinates, not boundaries of anatomical structures, and are not validated clinical measurements. Local scanner intensities are not tissue biomarkers. Export receipts contain the original image filename; review it before sharing.
 - **Clinical safety:** Never use these images for patient-specific medical judgments. A qualified clinician should interpret medical imaging in validated tools.
 - **Research literacy:** Correlations between cannabis use, brain volumes, and cognition cannot establish causation. MRIPHI is built to encourage careful exploration, not to substantiate those claims with visual approximations.
 
