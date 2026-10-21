@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type * as React from 'react';
 import { axisIndex, makeDemoVolume, readNifti, type Axis, type Position, type Volume } from './lib/volume';
 import { paintSlice, positionFromCanvas, sliceSize } from './lib/viewer';
+import { gridToWorld, spatialCenter, worldToGrid } from './lib/spatial';
 import './styles.css';
 
 type Tab = 'explorer' | 'atlas' | 'about';
@@ -58,8 +59,11 @@ function SlicePanel({ volume, axis, title, code, subtitle, position, onMove, bri
   brightness: number; contrast: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const index = position[axisIndex[axis]];
-  const maxIndex = volume.dims[axis === 'sagittal' ? 0 : axis === 'coronal' ? 1 : 2] - 1;
+  const axisNumber = axis === 'sagittal' ? 0 : axis === 'coronal' ? 1 : 2;
+  const index = worldToGrid(volume.spatial, axisNumber, position[axisIndex[axis]]);
+  const maxIndex = volume.spatial.gridDims[axisNumber] - 1;
+  const isRas = volume.spatial.source === 'sform' || volume.spatial.source === 'qform';
+  const directions = axis === 'sagittal' ? ['P','A'] : ['L','R'];
   const [width, height] = sliceSize(volume, axis);
 
   useEffect(() => {
@@ -101,7 +105,11 @@ function SlicePanel({ volume, axis, title, code, subtitle, position, onMove, bri
           onClick={pickPoint}
           style={{ aspectRatio: width + '/' + height }}
         />
-        <span className="orientation-label">VOXEL SPACE</span>
+        <span className="orientation-label">{isRas ? 'RAS+ · NEUROLOGICAL VIEW' : volume.spatial.source === 'demo' ? 'SYNTHETIC AXES' : 'UNVERIFIED AXES'}</span>
+        {isRas && <>
+          <span className="direction-label direction-left">{directions[0]}</span>
+          <span className="direction-label direction-right">{directions[1]}</span>
+        </>}
       </div>
       <div className="slice-footer">
         <label htmlFor={'slider-' + axis}>SLICE POSITION</label>
@@ -111,7 +119,7 @@ function SlicePanel({ volume, axis, title, code, subtitle, position, onMove, bri
         id={'slider-' + axis}
         className="range"
         type="range" min={0} max={maxIndex} step={1} value={index}
-        onChange={(e) => onMove({ [axisIndex[axis]]: Number(e.target.value) })}
+        onChange={(e) => onMove({ [axisIndex[axis]]: gridToWorld(volume.spatial, axisNumber, Number(e.target.value)) })}
         aria-label={title + ' slice'}
       />
     </article>
@@ -190,7 +198,7 @@ function RegionSelector({ selected, onSelect }: {
 export default function App() {
   const [tab, setTab] = useState<Tab>('explorer');
   const [volume, setVolume] = useState<Volume>(() => makeDemoVolume());
-  const [position, setPosition] = useState<Position>({ x: 64, y: 64, z: 48 });
+  const [position, setPosition] = useState<Position>({ x: 63.5, y: 63.5, z: 47.5 });
   const [brightness, setBrightness] = useState(50);
   const [contrast, setContrast] = useState(55);
   const [regionId, setRegionId] = useState<RegionKey>('hippocampus');
@@ -201,8 +209,9 @@ export default function App() {
 
   const onMove = (update: Partial<Position>) => setPosition((old) => ({ ...old, ...update }));
   const useDemo = () => {
-    setVolume(makeDemoVolume());
-    setPosition({ x: 64, y: 64, z: 48 });
+    const demo = makeDemoVolume();
+    setVolume(demo);
+    setPosition(spatialCenter(demo.spatial));
     setBrightness(50);
     setContrast(55);
     setError('');
@@ -218,11 +227,7 @@ export default function App() {
     try {
       const next = await readNifti(file);
       setVolume(next);
-      setPosition({
-        x: Math.floor(next.dims[0] / 2),
-        y: Math.floor(next.dims[1] / 2),
-        z: Math.floor(next.dims[2] / 2),
-      });
+      setPosition(spatialCenter(next.spatial));
       setBrightness(50);
       setContrast(55);
       setTab('explorer');
@@ -276,7 +281,7 @@ export default function App() {
 
         <div className="notice-bar" role="note">
           <span className="notice-symbol">!</span>
-          <p><strong>Educational / research exploration only.</strong> MRIPHI is not a medical device and does not provide diagnoses or quantitative brain-region segmentation. Any supplied image remains in raw voxel orientation.</p>
+          <p><strong>Educational / research exploration only.</strong> MRIPHI is not a medical device and does not provide diagnoses or quantitative brain-region segmentation. Imported MRI slices are aligned to RAS+ coordinates only when a valid NIfTI sform or qform is present; header orientation cannot independently be verified.</p>
         </div>
         {error && <div className="error-bar" role="alert"><strong>Could not open file:</strong> {error}</div>}
 
@@ -288,6 +293,11 @@ export default function App() {
             </span>
           </div>
           <div className="dataset-line"><span>DATASET</span><strong title={volume.name}>{volume.name}</strong><span>3D VOLUME · {volume.dims.join(' × ')} VOXELS</span></div>
+          <div className={'spatial-status ' + (volume.spatial.source === 'unverified' ? 'spatial-unverified' : '')} role="status">
+            <span>SPATIAL TRANSFORM</span>
+            <strong>{volume.spatial.source === 'demo' ? 'SYNTHETIC COORDINATES' : volume.spatial.source === 'unverified' ? 'UNVERIFIED · NO VALID AFFINE' : volume.spatial.source.toUpperCase() + ' · RAS+'}</strong>
+            <span>{volume.spatial.units === 'mm' ? 'MILLIMETERS' : 'UNITS ASSUMED MM'} · {volume.spatial.oblique ? 'OBLIQUE RESLICE' : 'AXIS-ALIGNED'} · TRILINEAR</span>
+          </div>
           <div className="slice-grid">
             {AXES.map((spec) => (
               <SlicePanel key={spec.axis} {...spec} volume={volume} position={position}
@@ -307,8 +317,8 @@ export default function App() {
                   onChange={(e) => setContrast(Number(e.target.value))} /></div>
               <div className="control-note">Controls adjust screen brightness/contrast only. Original voxel values remain unchanged.</div>
               <div className="coordinates">
-                <span>CROSSHAIR</span>
-                <code>X {position.x} &nbsp; Y {position.y} &nbsp; Z {position.z}</code>
+                <span>{volume.spatial.source === 'qform' || volume.spatial.source === 'sform' ? 'RAS+ POSITION' : 'LOCAL POSITION'}</span>
+                <code>X {position.x.toFixed(1)} &nbsp; Y {position.y.toFixed(1)} &nbsp; Z {position.z.toFixed(1)}</code>
               </div>
             </section>
             <section className="control-card anatomy-teaser">
@@ -361,7 +371,7 @@ export default function App() {
             <section className="about-facts">
               <div><span>01 / INPUT</span><strong>.nii &amp; .nii.gz</strong><p>Single-file NIfTI-1, one 3D volume, common scalar datatypes. No DICOM or time-series in R0.</p></div>
               <div><span>02 / PRIVACY</span><strong>100% browser-side</strong><p>Scans stay in your current browser session. Nothing is uploaded or stored by MRIPHI.</p></div>
-              <div><span>03 / INTERPRETATION</span><strong>Know the limits</strong><p>Raw voxel directions may not match anatomical left/right. No spatial registration, AI interpretation, or diagnosis.</p></div>
+              <div><span>03 / ORIENTATION</span><strong>RAS+ reslicing</strong><p>Reads valid sform/qform transforms for world-aligned views, including oblique scans. Missing/invalid transforms are explicitly unverified. Header correctness cannot be independently checked.</p></div>
               <div><span>04 / OPEN SCIENCE</span><strong>MIT licensed</strong><p>Read, fork, study, improve. Start with sample neuroimaging datasets from <a href="https://openneuro.org/" target="_blank" rel="noreferrer">OpenNeuro ↗</a>.</p></div>
             </section>
           </div>

@@ -1,3 +1,5 @@
+import { createSpatial, parseSpatial, type Spatial } from './spatial';
+
 export type Axis = 'axial' | 'coronal' | 'sagittal';
 export type Position = { x: number; y: number; z: number };
 
@@ -9,6 +11,7 @@ export type Volume = {
   data: Float32Array;
   low: number;
   high: number;
+  spatial: Spatial;
 };
 
 export const axisIndex: Record<Axis, keyof Position> = {
@@ -54,7 +57,8 @@ export function makeDemoVolume(): Volume {
   }
 
   return { name: 'Synthetic brain phantom', source: 'demo', dims,
-    spacing: [1, 1, 1], data, low: 0, high: 1 };
+    spacing: [1, 1, 1], data, low: 0, high: 1,
+    spatial: createSpatial(dims, [1,0,0,0, 0,1,0,0, 0,0,1,0], 'demo') };
 }
 
 function percentileWindow(data: Float32Array): [number, number] {
@@ -148,5 +152,6 @@ export async function readNifti(file: File): Promise<Volume> {
     (o) => Math.abs(view.getFloat32(o, little)) || 1,
   ) as [number, number, number];
   const [low, high] = percentileWindow(data);
-  return { name: file.name, source: 'nifti', dims, spacing, data, low, high };
+  const spatial = parseSpatial(view, little, dims, spacing);
+  return { name: file.name, source: 'nifti', dims, spacing, data, low, high, spatial };
 }

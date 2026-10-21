@@ -6,6 +6,14 @@ MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in Re
 
 > **Important:** MRIPHI is an educational/research exploration project, **not a medical device**. It does not diagnose disease, quantify regional brain volumes, segment anatomical structures, or assess cognition. The sample phantom is computer-generated and is not a human MRI.
 
+## R1 capabilities
+
+- **RAS+ world-aligned reslicing** from valid NIfTI-1 sform (preferred) or qform, including rotated, flipped, and oblique volumes.
+- Millimeter-coordinate navigation with original voxel data retained; on-demand trilinear interpolation for display only.
+- Orientation-source provenance and uncertainty badges; a missing, singular, or otherwise invalid affine is flagged as **UNVERIFIED**, with no patient-direction labels.
+- Visible patient-side labels for source-affine images in a **neurological** view (patient right at image right).
+- Tests for sform priority, qform quaternion/qfac handling, left-right flips, oblique interpolation, unit conversion, and invalid transforms.
+
 ## R0 capabilities
 
 - Interactive **axial**, **coronal**, and **sagittal** slice viewers with synchronized crosshairs.
@@ -35,9 +43,11 @@ npm run build
 
 The production build uses the `/MRIPHI/` base path for GitHub Pages. The included workflow deploys `dist/` on pushes to `main`, **after** you set **Settings → Pages → Source: GitHub Actions** in the repository.
 
-## R0 scientific and technical boundaries
+## Scientific and technical boundaries
 
-- **Orientation:** Slice positions are displayed in **native voxel-index space**. NIfTI qform/sform affine transforms are not yet applied. The viewer does **not** infer patient left/right or reliably label anatomy in imported scans.
+- **Orientation:** Valid NIfTI-1 **sform** takes precedence over **qform**. A qform quaternion is used if sform is absent or unusable. Both map voxel coordinates to RAS+ world coordinates. The three views are rendered on RAS+ world-aligned planes (including oblique volumes), using trilinear interpolation. Patient-direction labels use the **neurological display convention**: image right is patient right. Incorrect metadata will produce incorrect orientation: MRIPHI cannot independently check scanner metadata or patient orientation. Missing/invalid transforms are shown as **UNVERIFIED** voxel axes with no anatomical direction labels.
+- **Physical units:** Header meter, millimeter, and micrometer flags are converted to mm. If the spatial unit is unspecified, screen coordinates are flagged **assumed mm**, not independently validated.
+- **Resampling:** Original voxel data are preserved. Resampled slices are generated on demand, at no more than 384 points per axis for browser performance; rendered images are not intended for quantitative measurement.
 - **Formats:** Single-file NIfTI-1, one 3D scalar volume. No DICOM, NIfTI-2, multichannel RGB images, or 4D/time-series yet.
 - **Size:** Maximum 180 MB input, 220 MB decompressed data, and 25 million voxels, to protect browser memory.
 - **Contrast:** The UI uses a sampled 1st/99th percentile intensity range; window controls modify only the rendered grayscale display. The underlying volume is unchanged.
@@ -54,7 +64,7 @@ The production build uses the `/MRIPHI/` base path for GitHub Pages. The include
 
 ## Contributing
 
-Issues and pull requests are welcome. Useful next milestones: accurate qform/sform handling, test fixtures across datatypes/endian modes, multi-volume datasets, optional affine-aware coordinates, approved public demo data with clear license/provenance, and accessibility improvements.
+Issues and pull requests are welcome. Useful next milestones: test fixtures across datatypes/endian modes and real-world orientation edge cases, multi-volume datasets, optional crosshair display in native voxel coordinates alongside RAS+, approved public demo data with clear license/provenance, and accessibility improvements.
 
 ## License
 
