@@ -124,7 +124,7 @@ export function Stage3D({
         <div>
           <span className="section-kicker">R2 / THREE-DIMENSIONAL WORKSPACE</span>
           <h3 id="stage-heading">The 3D slice stage<span className="heading-period">.</span></h3>
-          <p>Three real imaging planes, intersecting in one coordinate system. Drag to orbit, then move the 2D slice sliders to explore the volume.</p>
+          <p>Three synchronized imaging planes, intersecting in one coordinate system. Drag to orbit, then move the 2D slice sliders to explore the volume.</p>
         </div>
         <span className="mini-tag">INTERACTIVE · LOCAL ONLY</span>
       </div>

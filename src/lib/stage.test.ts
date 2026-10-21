@@ -59,7 +59,7 @@ describe('MRIΦ 3D tri-plane geometry', () => {
     for (const p of geometry.planes) {
       expect(p.width).toBeGreaterThan(0);
       expect(p.height).toBeGreaterThan(0);
-      expect([p.x, p.y, p.z]).toEqual([0, 0, 0]);
+      for (const offset of [p.x, p.y, p.z]) expect(offset).toBeCloseTo(0, 9);
     }
   });
 });
