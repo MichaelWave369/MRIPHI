@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import './eeg.css';
 import type { ChangeEvent } from 'react';
 import { edfReceipt, readEdf, waveformEnvelope } from './lib/edf';
+import { makeSyntheticEeg } from './lib/eeg-demo';
 import type { EdfChannel, EdfRecording } from './lib/edf';
 
 const PAGE_SIZE = 8;
@@ -47,7 +48,7 @@ function drawWaveforms(
   channels.forEach((channel, row) => {
     const mid = top + (row + 0.5) * rowHeight;
     const halfHeight = Math.max(12, rowHeight * 0.36);
-    ctx.fillStyle = row % 2 === 0 ? '#132336' : '#101f30';
+    ctx.fillStyle = row % 2 === 0 ? 'rgba(170, 205, 238, 0.028)' : 'rgba(0, 0, 0, 0.015)';
     ctx.fillRect(0, top + row * rowHeight, width, rowHeight);
     ctx.beginPath();
     ctx.moveTo(left, mid);
@@ -168,6 +169,10 @@ export function EegExplorer() {
             {busy ? 'READING EDF…' : '↑ OPEN AN EDF FILE'}
           </button>
           <input ref={picker} className="visually-hidden" type="file" accept=".edf" onChange={onImport} aria-label="Open local EDF recording" />
+          <button className="secondary-action" type="button" disabled={busy}
+            onClick={() => { setRecording(makeSyntheticEeg()); setError(''); setStart(0); setChannelPage(0); }}>
+            ◎ SYNTHETIC EEG DEMO
+          </button>
           {recording && <button className="secondary-action" type="button" onClick={() => { setRecording(null); setError(''); setStart(0); }}>CLEAR SESSION</button>}
         </div>
       </div>
@@ -184,7 +189,7 @@ export function EegExplorer() {
         <>
           <div className="eeg-recording-details" role="status">
             <div><span>DATASET</span><strong title={recording.name}>{recording.name}</strong></div>
-            <div><span>FORMAT</span><strong>{recording.format}</strong></div>
+            <div><span>FORMAT / PROVENANCE</span><strong>{recording.source === 'synthetic' ? 'SYNTHETIC DEMO' : recording.format + ' · LOCAL FILE'}</strong></div>
             <div><span>TIME</span><strong>{recording.durationSeconds.toFixed(1)} s</strong></div>
             <div><span>SIGNAL CHANNELS</span><strong>{channels.length}</strong></div>
           </div>
