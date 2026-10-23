@@ -8,7 +8,7 @@ MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in Re
 
 ## R4 capabilities: EEG Explorer (continuous EDF)
 
-MRIΦ now has a separate **03 / EEG** workspace. Open a local 16-bit **EDF** or continuous **EDF+C** recording (.edf), navigate through time, page across eight signal channels at a time, and export a **metadata-only JSON research receipt**. The existing MRI explorer, 3D stage, and anatomy atlas are preserved.
+MRIΦ now has a separate **03 / EEG** workspace. Open a local 16-bit **EDF** or continuous **EDF+C** recording (.edf), or click **SYNTHETIC EEG DEMO** to explore clearly labeled mathematical sample waves. Navigate through time, page across eight signal channels at a time, and export a **metadata-only JSON research receipt**. The existing MRI explorer, 3D stage, and anatomy atlas are preserved.
 
 - **Browser-local signal viewing:** file data stays in memory on your device, with no upload or telemetry. Maximum EDF file size is **128 MiB**.
 - **Header-aware parser:** validates declared length, channel count, record durations/count, per-channel sample rates, record interleaving, and 16-bit little-endian sample ranges. Calibration converts ADC counts to the physical units declared in the file.
