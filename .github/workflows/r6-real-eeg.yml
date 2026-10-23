@@ -35,7 +35,7 @@ jobs:
           cache-dependency-path: scripts/requirements-reference.txt
       - name: Install project and independent analysis dependencies
         run: |
-          npm ci --no-audit --no-fund
+          npm install --no-audit --no-fund
           python -m pip install --disable-pip-version-check --prefer-binary -r scripts/requirements-reference.txt
       - name: Download exactly one public EDF, with bounded size
         shell: bash
