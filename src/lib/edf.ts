@@ -19,6 +19,7 @@ export type EdfChannel = {
 
 export type EdfRecording = {
   name: string;
+  source: 'local' | 'synthetic';
   view: DataView;
   headerBytes: number;
   bytesPerRecord: number;
@@ -57,7 +58,7 @@ function decimal(value: string, label: string): number {
   return number;
 }
 
-export function parseEdf(buffer: ArrayBuffer, name = 'local recording.edf'): EdfRecording {
+export function parseEdf(buffer: ArrayBuffer, name = 'local recording.edf', source: 'local' | 'synthetic' = 'local'): EdfRecording {
   if (buffer.byteLength > MAX_EDF_BYTES) {
     throw new Error('EDF exceeds the 128 MiB local safety limit.');
   }
@@ -162,7 +163,7 @@ export function parseEdf(buffer: ArrayBuffer, name = 'local recording.edf'): Edf
     warnings.push('Some channels do not declare microvolt units; do not assume identical units.');
   }
   return {
-    name, view: new DataView(buffer), headerBytes, bytesPerRecord: offset,
+    name, source, view: new DataView(buffer), headerBytes, bytesPerRecord: offset,
     records, recordDuration, durationSeconds, channels, warnings, format,
   };
 }
@@ -228,7 +229,7 @@ export function waveformEnvelope(
 export function edfReceipt(recording: EdfRecording) {
   return {
     schema: 'mriphi-edf-r4-v1',
-    provenance: 'locally imported EDF header; not independently verified',
+    provenance: recording.source === 'synthetic' ? 'deterministic synthetic illustrative data; not human EEG' : 'locally imported EDF header; not independently verified',
     format: recording.format,
     durationSeconds: recording.durationSeconds,
     records: recording.records,
