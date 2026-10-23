@@ -2,9 +2,27 @@
 
 **Explore the brain. Question everything. Everybody gets a piece.**
 
-MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in React + Vite. It offers three synchronized orthogonal slice views, a deliberately synthetic demonstration volume, a separate illustrated brain-anatomy reference, and an R4 continuous EDF waveform explorer.
+MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in React + Vite. It offers three synchronized orthogonal slice views, a deliberately synthetic demonstration volume, a separate illustrated brain-anatomy reference, and continuous EDF waveform exploration with an R5 single-channel Brainwave Lab.
 
 > **Important:** MRIPHI is an educational/research exploration project, **not a medical device**. It does not diagnose disease, quantify regional brain volumes, segment anatomical structures, or assess cognition. The sample phantom is computer-generated and is not a human MRI.
+
+## R5 capabilities: Brainwave Lab
+
+The **03 / EEG** workspace now includes a separate **Brainwave Lab** panel below the original R4 waveforms. Choose a signal channel and press **ANALYZE WINDOW** to run a locally computed, bounded four-second spectral analysis.
+
+- **Spectral estimator:** in-browser one-sided **Welch periodogram** with Hann window, per-segment mean removal, up to 4096-point radix-2 FFT, 50% overlap, calibrated physical signal units squared per Hz. The spectrum is plotted in dB **relative to its own peak** for visibility; absolute PSD values and integrated band powers are retained for calculations.
+- **Band powers:** conventional delta (0.5–4 Hz), theta (4–8 Hz), alpha (8–13 Hz), beta (13–30 Hz), gamma (30–45 Hz). Relative percentages are fractions of 0.5–min(45 Hz, Nyquist) integrated power. Bands crossing Nyquist are **N/A**, not silently extrapolated.
+- **Descriptive channel indicators:** mean, AC RMS, peak-to-peak amplitude, percent of samples close to the file's digital rails, and percent of identical adjacent ADC values. These are **not validated noise/quality grades**.
+- **Bounded computation:** analyzes a maximum of four seconds / 131,072 samples, with an FFT of at most 4096 samples. The UI always declares the actual window, frequency resolution, sampling rate, and Welch segment count. Other channels are untouched.
+- **Reproducibility:** deterministic synthetic multi-frequency sample, FFT and band-power regression tests, and downloadable **aggregate-only R5 receipts** without raw samples, original filename, patient headers, or channel labels. Aggregated results may still contain sensitive information.
+- **Scientific limitations:** no device calibration verification, no automated artifact removal, no clinical EEG interpretation, no source localization, no claims of telepathy, nonlocal coupling, cognition, or consciousness state. Spectra from head movements, muscle signals, ECG/EOG and hardware noise may look rhythmic.
+
+**Try it:** select **03 / EEG** → **SYNTHETIC EEG DEMO** → **ANALYZE WINDOW**. Choose SYN-FP2 to observe the artificial 9 Hz peak, which should appear predominantly in the alpha band; this is **not a recording of human brain activity**.
+
+### R6–R7 research direction (not yet implemented)
+
+1. Better electrode metadata and carefully validated EEG/MRI coordinate registration, including known geometry and recording synchronization if simultaneous datasets are used.
+2. Pre-registered coherence and information-flow analyses against shuffled, delayed, leakage, and held-out control datasets, with explicit provenance receipts and null outcomes reported.
 
 ## R4 capabilities: EEG Explorer (continuous EDF)
 
@@ -13,18 +31,18 @@ MRIΦ now has a separate **03 / EEG** workspace. Open a local 16-bit **EDF** or 
 - **Browser-local signal viewing:** file data stays in memory on your device, with no upload or telemetry. Maximum EDF file size is **128 MiB**.
 - **Header-aware parser:** validates declared length, channel count, record durations/count, per-channel sample rates, record interleaving, and 16-bit little-endian sample ranges. Calibration converts ADC counts to the physical units declared in the file.
 - **Waveform rendering:** min/max downsampling preserves short spikes better than naive sample skipping. Per-row auto-scaling aids visibility but **prevents comparing waveform height directly across rows**.
-- **Safe scope:** EDF+ annotation channels are omitted; events and annotations are **not decoded**. **EDF+D** (discontinuous timing), **BDF** (24-bit), live hardware acquisition, EEG–MRI registration, filtering, spectral analysis, and clinical or consciousness inference are **not implemented**.
+- **Safe scope:** EDF+ annotation channels are omitted; events and annotations are **not decoded**. **EDF+D** (discontinuous timing), **BDF** (24-bit), live hardware acquisition, EEG–MRI registration, filtering, clinical or consciousness inference are **not implemented**. R5 provides single-channel spectrum estimation.
 - **Privacy:** EDF headers may contain real patient identifiers; the app does not display patient fields and the exported receipt excludes patient header, recording header, filename, and signal samples. Channel names can still be identifying: review the receipt before sharing.
 - **Honest signal labels:** a channel marked EEG by the file header is not scientifically verified to be cortical EEG. ECG, EOG, EMG, electrical interference, and artifacts require specialist interpretation.
 - **Tests:** deterministic EDF fixtures cover calibration, record layout, multi-rate channels, malformed/truncated files, continuous/discontinuous timing, annotations, and receipt exclusions.
 
 Use: select **03 / EEG** and click **OPEN AN EDF FILE**. A public research dataset or a local acquisition-software export in supported EDF format works. MRIPHI does **not** capture EEG on its own, and the MRI scanner image viewer does not read EEG files.
 
-### R5–R7 research direction (not yet implemented)
+### R4 original proposed research roadmap (R5 spectral stage now implemented)
 
-1. Add explicitly qualified band-power and quality metrics with validation fixtures.
-2. Map EEG sensor layouts onto anatomy using actual electrode-coordinate data and a justified registration procedure.
-3. Compare synchronization, time-varying networks and NBG/DCF graph-closure metrics against prespecified shuffled, shift-control, and held-out baselines. **No nonlocal coupling or consciousness claim is supported by the viewer.**
+1. R5 implemented bounded Welch PSD, descriptive band power and signal indicators; not clinical quality judgments.
+2. Future: map EEG sensor layouts onto anatomy using actual electrode-coordinate data and a justified registration procedure.
+3. Future: compare synchronization, time-varying networks and NBG/DCF graph-closure metrics against prespecified shuffled, shift-control, and held-out baselines. **No nonlocal coupling or consciousness claim is supported by the viewer.**
 
 ## R3 capabilities: Scan Inspector
 
