@@ -2,9 +2,29 @@
 
 **Explore the brain. Question everything. Everybody gets a piece.**
 
-MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in React + Vite. It offers three synchronized orthogonal slice views, a deliberately synthetic demonstration volume, and a separate illustrated brain-anatomy reference.
+MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in React + Vite. It offers three synchronized orthogonal slice views, a deliberately synthetic demonstration volume, a separate illustrated brain-anatomy reference, and an R4 continuous EDF waveform explorer.
 
 > **Important:** MRIPHI is an educational/research exploration project, **not a medical device**. It does not diagnose disease, quantify regional brain volumes, segment anatomical structures, or assess cognition. The sample phantom is computer-generated and is not a human MRI.
+
+## R4 capabilities: EEG Explorer (continuous EDF)
+
+MRIΦ now has a separate **03 / EEG** workspace. Open a local 16-bit **EDF** or continuous **EDF+C** recording (.edf), navigate through time, page across eight signal channels at a time, and export a **metadata-only JSON research receipt**. The existing MRI explorer, 3D stage, and anatomy atlas are preserved.
+
+- **Browser-local signal viewing:** file data stays in memory on your device, with no upload or telemetry. Maximum EDF file size is **128 MiB**.
+- **Header-aware parser:** validates declared length, channel count, record durations/count, per-channel sample rates, record interleaving, and 16-bit little-endian sample ranges. Calibration converts ADC counts to the physical units declared in the file.
+- **Waveform rendering:** min/max downsampling preserves short spikes better than naive sample skipping. Per-row auto-scaling aids visibility but **prevents comparing waveform height directly across rows**.
+- **Safe scope:** EDF+ annotation channels are omitted; events and annotations are **not decoded**. **EDF+D** (discontinuous timing), **BDF** (24-bit), live hardware acquisition, EEG–MRI registration, filtering, spectral analysis, and clinical or consciousness inference are **not implemented**.
+- **Privacy:** EDF headers may contain real patient identifiers; the app does not display patient fields and the exported receipt excludes patient header, recording header, filename, and signal samples. Channel names can still be identifying: review the receipt before sharing.
+- **Honest signal labels:** a channel marked EEG by the file header is not scientifically verified to be cortical EEG. ECG, EOG, EMG, electrical interference, and artifacts require specialist interpretation.
+- **Tests:** deterministic EDF fixtures cover calibration, record layout, multi-rate channels, malformed/truncated files, continuous/discontinuous timing, annotations, and receipt exclusions.
+
+Use: select **03 / EEG** and click **OPEN AN EDF FILE**. A public research dataset or a local acquisition-software export in supported EDF format works. MRIPHI does **not** capture EEG on its own, and the MRI scanner image viewer does not read EEG files.
+
+### R5–R7 research direction (not yet implemented)
+
+1. Add explicitly qualified band-power and quality metrics with validation fixtures.
+2. Map EEG sensor layouts onto anatomy using actual electrode-coordinate data and a justified registration procedure.
+3. Compare synchronization, time-varying networks and NBG/DCF graph-closure metrics against prespecified shuffled, shift-control, and held-out baselines. **No nonlocal coupling or consciousness claim is supported by the viewer.**
 
 ## R3 capabilities: Scan Inspector
 
@@ -71,7 +91,7 @@ The production build uses the `/MRIPHI/` base path for GitHub Pages. The include
 - **Physical units:** Header meter, millimeter, and micrometer flags are converted to mm. If the spatial unit is unspecified, screen coordinates are flagged **assumed mm**, not independently validated.
 - **3D stage:** An exploratory 3D display of three 2D resampled MRI slices. There is no 3D surface extraction, volumetric ray-casting, or image interpretation; the chosen camera angle never changes scientific voxel coordinates.
 - **Resampling:** Original voxel data are preserved. Resampled slices are generated on demand, at no more than 384 points per axis for browser performance; rendered images are not intended for quantitative measurement.
-- **Formats:** Single-file NIfTI-1, one 3D scalar volume. No DICOM, NIfTI-2, multichannel RGB images, or 4D/time-series yet.
+- **MRI formats:** Single-file NIfTI-1, one 3D scalar volume. No DICOM, NIfTI-2, multichannel RGB images, or 4D/time-series yet. The separate EEG workspace supports bounded continuous 16-bit EDF/EDF+C recordings, not EDF+D or BDF.
 - **Size:** Maximum 180 MB input, 220 MB decompressed data, and 25 million voxels, to protect browser memory.
 - **Contrast:** The UI uses a sampled 1st/99th percentile intensity range; window controls modify only the rendered grayscale display. The underlying volume is unchanged.
 - **Atlas:** The brain drawing is an *illustration*, not a voxel-space anatomical overlay or segmentation result.
