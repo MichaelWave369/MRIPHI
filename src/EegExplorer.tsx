@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import './eeg.css';
 import type { ChangeEvent } from 'react';
 import { edfReceipt, readEdf, waveformEnvelope } from './lib/edf';
 import type { EdfChannel, EdfRecording } from './lib/edf';
