@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { EdfRecording } from './lib/edf';
 import { analyzeEdfChannel, eegAnalysisReceipt } from './lib/eeg-analysis';
+import { EegRealityValidation } from './EegRealityValidation';
 import type { EegAnalysis } from './lib/eeg-analysis';
 import './brainwave-lab.css';
 
@@ -117,7 +118,7 @@ export function EegBrainwaveLab({ recording, viewStartSeconds, viewWindowSeconds
     <section className="brainwave-lab" aria-label="R5 Brainwave Lab">
       <div className="brainwave-heading">
         <div>
-          <span className="section-kicker">R5 / FREQUENCY &amp; SIGNAL ANALYSIS</span>
+          <span className="section-kicker">R5 + R6 / FREQUENCY &amp; REALITY VALIDATION</span>
           <h3>Brainwave Lab<span className="heading-period">.</span></h3>
           <p>Explore one channel at a time with an explainable frequency estimate and descriptive recording indicators.</p>
         </div>
@@ -179,6 +180,7 @@ export function EegBrainwaveLab({ recording, viewStartSeconds, viewWindowSeconds
             <div><span>NEAR ADC RAIL</span><strong>{analysis.nearRailPercent.toFixed(2)}<small>% of samples</small></strong></div>
             <div><span>UNCHANGED SAMPLES</span><strong>{analysis.unchangedAdjacentPercent.toFixed(2)}<small>% adjacent pairs</small></strong></div>
           </div>
+          <EegRealityValidation analysis={analysis} />
           <div className="brainwave-warnings" role="note">
             <strong>R5 EVIDENCE &amp; LIMITS</strong>
             <ul>{analysis.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
