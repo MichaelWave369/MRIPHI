@@ -20,9 +20,6 @@ jobs:
   real-edf-crosscheck:
     runs-on: ubuntu-latest
     timeout-minutes: 18
-    env:
-      MRIPHI_E2E_EDF: ${{ runner.temp }}/mriphi-public-edf/S001R01.edf
-      MRIPHI_E2E_OUT: ${{ runner.temp }}/mriphi-public-edf/evidence
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -33,6 +30,11 @@ jobs:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: scripts/requirements-reference.txt
+      - name: Configure runner-local private paths
+        shell: bash
+        run: |
+          echo "MRIPHI_E2E_EDF=$RUNNER_TEMP/mriphi-public-edf/S001R01.edf" >> "$GITHUB_ENV"
+          echo "MRIPHI_E2E_OUT=$RUNNER_TEMP/mriphi-public-edf/evidence" >> "$GITHUB_ENV"
       - name: Install project and independent analysis dependencies
         run: |
           npm install --no-audit --no-fund
