@@ -16,6 +16,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: r6-real-eeg-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   real-edf-crosscheck:
     runs-on: ubuntu-latest
@@ -44,10 +48,17 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$(dirname "$MRIPHI_E2E_EDF")" "$MRIPHI_E2E_OUT"
-          curl --fail --location --show-error --silent --retry 3 --retry-all-errors \
-            --connect-timeout 20 --max-time 120 \
+          if ! curl --fail --location --show-error --silent --retry 1 --retry-all-errors \
+            --connect-timeout 10 --max-time 35 \
             --output "$MRIPHI_E2E_EDF" \
-            "https://physionet.org/files/eegmmidb/1.0.0/S001/S001R01.edf"
+            "https://physionet.org/files/eegmmidb/1.0.0/S001/S001R01.edf"; then
+            echo "Primary PhysioNet download unavailable; using its public S3 mirror."
+            rm -f "$MRIPHI_E2E_EDF"
+            curl --fail --location --show-error --silent --retry 1 --retry-all-errors \
+              --connect-timeout 10 --max-time 35 \
+              --output "$MRIPHI_E2E_EDF" \
+              "https://physionet-open.s3.amazonaws.com/eegmmidb/1.0.0/S001/S001R01.edf"
+          fi
           bytes=$(wc -c < "$MRIPHI_E2E_EDF")
           test "$bytes" -gt 1024
           test "$bytes" -le 134217728
