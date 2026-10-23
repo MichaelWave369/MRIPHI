@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import type { EegAnalysis } from './lib/eeg-analysis';
 import { compareR6, createR6Request, parseR6Reference } from './lib/eeg-validation';
@@ -23,6 +23,12 @@ export function EegRealityValidation({ analysis }: Props) {
   const [comparison, setComparison] = useState<R6Comparison | null>(null);
   const [error, setError] = useState('');
   const [importedEngine, setImportedEngine] = useState('');
+
+  useEffect(() => {
+    setComparison(null);
+    setError('');
+    setImportedEngine('');
+  }, [analysis]);
 
   async function onReferenceFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
