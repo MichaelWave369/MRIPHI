@@ -3,6 +3,7 @@ import './eeg.css';
 import type { ChangeEvent } from 'react';
 import { edfReceipt, readEdf, waveformEnvelope } from './lib/edf';
 import { makeSyntheticEeg } from './lib/eeg-demo';
+import { EegBrainwaveLab } from './EegBrainwaveLab';
 import type { EdfChannel, EdfRecording } from './lib/edf';
 
 const PAGE_SIZE = 8;
@@ -155,12 +156,12 @@ export function EegExplorer() {
       <div className="section-heading">
         <div><span className="section-kicker">03 / ELECTROPHYSIOLOGY WORKSPACE</span>
           <h2>EEG explorer<span className="heading-period">.</span></h2></div>
-        <span className="dataset-badge demo">R4 · LOCAL EDF READER</span>
+        <span className="dataset-badge demo">R5 · EEG + BRAINWAVE LAB</span>
       </div>
       <div className="eeg-intro">
         <div>
           <h3>Bring real brainwave recordings into MRIΦ.</h3>
-          <p>Open a continuous EDF or EDF+C recording to view original channels as scaled waveforms.
+          <p>Open a continuous EDF or EDF+C recording to view original channels as scaled waveforms, then inspect a single-channel power spectrum in Brainwave Lab.
             Sample data stay in this browser tab. This is a waveform viewer, not a clinical
             EEG interpreter or a measurement of thoughts, telepathy, or consciousness.</p>
         </div>
@@ -224,6 +225,7 @@ export function EegExplorer() {
             <span>RAW EDF SAMPLES · DISPLAY CALIBRATION FROM FILE HEADER · INDEPENDENT ROW SCALING</span>
             <button className="secondary-action" type="button" onClick={exportReceipt}>↓ EXPORT METADATA RECEIPT</button>
           </div>
+          <EegBrainwaveLab recording={recording} viewStartSeconds={currentStart} viewWindowSeconds={span} />
           <div className="eeg-warnings" role="note">
             <strong>INTERPRETATION AND DATA LIMITS</strong>
             <ul>{recording.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>
