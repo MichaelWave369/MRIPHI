@@ -6,6 +6,22 @@ MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in Re
 
 > **Important:** MRIPHI is an educational/research exploration project, **not a medical device**. It does not diagnose disease, quantify regional brain volumes, segment anatomical structures, or assess cognition. The sample phantom is computer-generated and is not a human MRI.
 
+## R6.1 · Real-data numerical cross-check
+
+A separate **R6.1 Real EEG Evidence** GitHub Action downloads **one** public PhysioNet EDF (\`S001R01.edf\` from EEG Motor Movement/Imagery v1.0.0, DOI 10.13026/C28G6P, Open Data Commons Attribution 1.0) and tests three fixed combinations of channel and time window.
+
+- Windows: channel 0 at 0–4 seconds, channel 1 at 8–12 seconds, channel 8 at 20–24 seconds.
+- Stage A: the **same TypeScript EDF and Welch analysis functions used in the browser** parse the entire real EDF and export R6 analysis requests (not signal samples).
+- Stage B: a **separate Python EDF decoder** loads the original file, and MNE-Python calculates the reference results with the same declared spectrum parameters.
+- Stage C: MRIΦ's comparator tests the reference values, confirms input metadata, and writes a public-safe \`real-eeg-ledger.json\`, with each numerical check, dataset version, file byte length and SHA-256 digest.
+- The action uploads **only the aggregate ledger** for inspection for 30 days. It never commits or uploads the original EEG recording, request files, reference files, or raw samples.
+
+Run the automated workflow from **Actions → R6.1 Real EEG Evidence → Run workflow** or via a PR that changes the validation tests or workflow. External dataset access is required for this workflow; ordinary \`npm test\` remains offline and skips the optional real-data test.
+
+**Evidence states:** A green synthetic-only R6 run is **not** a real-dataset PASS. The real-data ledger says \`PASS\` only if all three independently calculated reference comparisons agree; a numerical discrepancy is \`FAIL\`. A failed download, dependency installation, or unavailable runner is **UNVERIFIED**, never a pass. This proves limited numerical agreement only, not clinically useful EEG analysis or any connection to Grinberg's speculative universal lattice.
+
+Dataset attribution: Schalk et al., *EEG Motor Movement/Imagery Dataset*, PhysioNet 1.0.0 (2009), https://doi.org/10.13026/C28G6P. See the dataset page for full contributor acknowledgements and usage license.
+
 ## R6 capabilities: Reality Validation (cross-tool verification)
 
 The **03 / EEG → Brainwave Lab → R6 Reality Validation** panel compares MRIΦ's browser-computed channel spectrum against an **independently calculated** MNE-Python reference from a selected EDF file. A matching JSON result is a **numerical cross-check**, not clinical validation, file-authenticity proof, or evidence of anomalous physical coupling.
