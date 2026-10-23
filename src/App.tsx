@@ -377,7 +377,7 @@ export default function App() {
           <div className="atlas-footnote">Brain structure size and cognitive function are complex. Association does not prove causation. This reference is intended for learning, not for estimating structures in personal scans.</div>
         </>}
 
-        {tab === 'eeg' && <EegExplorer />}
+        <div hidden={tab !== 'eeg'}><EegExplorer /></div>
 
         {tab === 'about' && <>
           <div className="section-heading"><div><span className="section-kicker">04 / THE MANIFESTO</span><h2>Everybody gets a piece<span className="heading-period">.</span></h2></div></div>
