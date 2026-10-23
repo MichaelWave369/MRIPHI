@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - "src/lib/real-data-validation.test.ts"
+      - "scripts/real-data-validation.test.ts"
       - "src/lib/edf.ts"
       - "src/lib/eeg-analysis.ts"
       - "src/lib/eeg-validation.ts"
@@ -56,7 +56,7 @@ jobs:
       - name: Calculate browser-engine metrics and verification requests
         env:
           MRIPHI_E2E_STAGE: request
-        run: npx vitest run src/lib/real-data-validation.test.ts
+        run: npx vitest run scripts/real-data-validation.test.ts
       - name: Independently calculate three MNE references
         shell: bash
         run: |
@@ -70,7 +70,7 @@ jobs:
       - name: Check numerical agreement and record complete evidence
         env:
           MRIPHI_E2E_STAGE: compare
-        run: npx vitest run src/lib/real-data-validation.test.ts
+        run: npx vitest run scripts/real-data-validation.test.ts
       - name: Upload aggregated public-data ledger only
         if: always()
         uses: actions/upload-artifact@v4
