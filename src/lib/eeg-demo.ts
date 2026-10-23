@@ -18,7 +18,7 @@ export function makeSyntheticEeg(): EdfRecording {
   put(8, 80, 'SYNTHETIC DEMO - NOT A HUMAN');
   put(88, 80, 'MRIPHI ILLUSTRATIVE DATA');
   put(184, 8, String(headerBytes));
-  put(192, 44, 'EDF+C');
+  // Plain continuous EDF: no EDF+ annotation channel is present.
   put(236, 8, String(seconds));
   put(244, 8, '1');
   put(252, 4, String(channelCount));
