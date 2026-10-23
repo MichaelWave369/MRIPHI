@@ -5,10 +5,11 @@ import { paintSlice, positionFromCanvas, sliceSize } from './lib/viewer';
 import { gridToWorld, spatialCenter, worldToGrid } from './lib/spatial';
 import { Stage3D } from './Stage3D';
 import { ScanInspector } from './ScanInspector';
+import { EegExplorer } from './EegExplorer';
 import type { Marks } from './lib/inspector';
 import './styles.css';
 
-type Tab = 'explorer' | 'atlas' | 'about';
+type Tab = 'explorer' | 'atlas' | 'eeg' | 'about';
 type RegionKey = 'hippocampus' | 'amygdala' | 'caudate' | 'putamen';
 
 const REGIONS: {
@@ -249,11 +250,11 @@ export default function App() {
       <header className="site-header">
         <Logo />
         <nav className="nav" aria-label="Main navigation">
-          {(['explorer', 'atlas', 'about'] as Tab[]).map((item) => (
+          {(['explorer', 'atlas', 'eeg', 'about'] as Tab[]).map((item) => (
             <button key={item} onClick={() => setTab(item)}
               className={tab === item ? 'nav-active' : ''}
               aria-current={tab === item ? 'page' : undefined}>
-              {item === 'explorer' ? '01 / Explorer' : item === 'atlas' ? '02 / Anatomy' : '03 / About'}
+              {item === 'explorer' ? '01 / Explorer' : item === 'atlas' ? '02 / Anatomy' : item === 'eeg' ? '03 / EEG' : '04 / About'}
             </button>
           ))}
         </nav>
@@ -266,7 +267,7 @@ export default function App() {
           <div className="hero-content">
             <div className="eyebrow"><span className="live-dot" /> OPEN SOURCE · LOCAL FIRST · FOR EVERYONE</div>
             <h1>Explore the brain.<br /><em>Question everything.</em></h1>
-            <p>An open neuroimaging studio for curious minds. Explore MRI slices, discover brain anatomy, and bring your own scans into the browser.</p>
+            <p>An open neuroimaging studio for curious minds. Explore MRI slices, inspect EDF waveforms, discover brain anatomy, and bring your own datasets into the browser.</p>
             <div className="hero-actions">
               <button className="primary-action" onClick={() => pickerRef.current?.click()} disabled={loading}>
                 <span aria-hidden="true">↑</span> {loading ? 'READING SCAN…' : 'OPEN AN MRI FILE'}
@@ -376,13 +377,15 @@ export default function App() {
           <div className="atlas-footnote">Brain structure size and cognitive function are complex. Association does not prove causation. This reference is intended for learning, not for estimating structures in personal scans.</div>
         </>}
 
+        {tab === 'eeg' && <EegExplorer />}
+
         {tab === 'about' && <>
-          <div className="section-heading"><div><span className="section-kicker">03 / THE MANIFESTO</span><h2>Everybody gets a piece<span className="heading-period">.</span></h2></div></div>
+          <div className="section-heading"><div><span className="section-kicker">04 / THE MANIFESTO</span><h2>Everybody gets a piece<span className="heading-period">.</span></h2></div></div>
           <div className="about-grid">
             <section className="about-lead">
               <span className="section-kicker">MRIΦ · MRIPHI</span>
               <h3>Brain science should inspire questions, not build walls.</h3>
-              <p>MRIPHI is a free, open-source browser workspace for exploring volumetric neuroimaging. No accounts, no server-side file upload, and no paywall between you and a three-dimensional dataset.</p>
+              <p>MRIPHI is a free, open-source browser workspace for exploring volumetric neuroimaging and continuous EDF signal recordings. No accounts, no server-side file upload, and no paywall between you and a three-dimensional dataset.</p>
               <p>Start with a deliberately synthetic phantom or open a local single-volume NIfTI-1 scan. Explore axial, coronal, and sagittal planes together, then learn what brain regions do from the illustrated atlas.</p>
               <a href="https://github.com/MichaelWave369/MRIPHI" target="_blank" rel="noreferrer" className="primary-action about-link">VIEW SOURCE ON GITHUB ↗</a>
             </section>
