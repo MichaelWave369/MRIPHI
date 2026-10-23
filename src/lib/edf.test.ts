@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { edfReceipt, parseEdf, physicalSample, waveformEnvelope } from './edf';
+import { makeSyntheticEeg } from './eeg-demo';
 
 function fixture(options: {
   marker?: string;
@@ -48,6 +49,17 @@ function fixture(options: {
 }
 
 describe('EDF import R4', () => {
+  it('provides deterministic demo waves clearly separated from human recordings', () => {
+    const demo = makeSyntheticEeg();
+    expect(demo.source).toBe('synthetic');
+    expect(demo.channels).toHaveLength(4);
+    expect(demo.durationSeconds).toBe(12);
+    expect(demo.channels.every((channel) => channel.sampleRate === 128)).toBe(true);
+    expect(physicalSample(demo, demo.channels[0], 12)).toBeCloseTo(physicalSample(makeSyntheticEeg(), demo.channels[0], 12));
+    expect(JSON.stringify(edfReceipt(demo))).toContain('synthetic illustrative data');
+    expect(demo.warnings[0]).toContain('not human brain activity');
+  });
+
   it('parses interleaved records and calibrates each channel in its own units', () => {
     const recording = parseEdf(fixture(), 'brain.edf');
     expect(recording.format).toBe('EDF+C');
