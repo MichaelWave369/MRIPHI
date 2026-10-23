@@ -1,0 +1,47 @@
+/* MRIΦ R4: local EDF waveform workspace. No external dependencies. */
+.eeg-explorer{margin-bottom:70px}
+.eeg-intro{display:flex;justify-content:space-between;gap:22px;align-items:center;padding:27px;background:#122135;border:1px solid #324d60;border-radius:9px}
+.eeg-intro h3{font-size:clamp(19px,2.2vw,28px);letter-spacing:-.5px;margin:0 0 12px}
+.eeg-intro p{max-width:740px;line-height:1.7;font-size:13px;color:#a4b7c9;margin:0}
+.eeg-upload-actions{display:flex;flex-direction:column;gap:9px;min-width:230px}
+.eeg-privacy,.eeg-timeline-label{display:block;color:#8da7bb;font-size:10px;letter-spacing:1.2px;font-weight:750;margin:15px 0}
+.eeg-empty{margin:23px 0;border:1px dashed #38536b;background:#0f1c2d;border-radius:8px;padding:50px 30px;text-align:center}
+.eeg-empty strong{letter-spacing:2px;color:#a4e6d1;font-size:15px}
+.eeg-empty p{color:#8da6ba;max-width:580px;margin:16px auto 0;line-height:1.75;font-size:13px}
+.eeg-recording-details{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:1px;margin-top:20px;border:1px solid #314b61;border-radius:7px;overflow:hidden;background:#314b61}
+.eeg-recording-details>div{display:flex;gap:10px;flex-direction:column;padding:18px;background:#102033;min-width:0}
+.eeg-recording-details span{font-size:9px;letter-spacing:1.35px;color:#7da4b8}
+.eeg-recording-details strong{font-size:14px;overflow-wrap:anywhere;color:#dcece9}
+.eeg-controls{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin:22px 0 12px}
+.eeg-controls label{display:flex;align-items:center;gap:12px;color:#95b8cc;font-size:10px;letter-spacing:1px;font-weight:800}
+.eeg-controls select{border:1px solid #405a6d;background:#14283a;color:#e5f7f8;padding:10px;border-radius:4px;font-size:12px}
+.eeg-stepper{display:flex;align-items:center;gap:12px;font-variant-numeric:tabular-nums}
+.eeg-stepper span{font-size:11px;color:#b7d5df;min-width:100px;text-align:center}
+.eeg-stepper button{border:1px solid #445a6b;background:#17293b;color:#b9e5da;border-radius:4px;padding:10px 12px;font-size:10px;font-weight:800;white-space:nowrap}
+.eeg-stepper button:hover:not(:disabled){border-color:#86e6c8}
+.eeg-stepper button:disabled{opacity:.38;cursor:not-allowed}
+.eeg-timeline{width:100%;margin:4px 0 15px}
+.eeg-canvas-wrap{border:1px solid #37556b;border-radius:8px;background:#0b1828;overflow-x:auto}
+.eeg-canvas-wrap canvas{display:block;width:1160px;height:auto;max-width:none}
+.eeg-result-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:17px 0 20px}
+.eeg-result-footer span{color:#91aec1;font-size:10px;letter-spacing:.7px}
+.eeg-result-footer button{min-height:40px;padding:0 14px}
+.eeg-warnings{border:1px solid #4a4652;background:#211e29;border-radius:6px;padding:18px 22px;color:#c4bbc8;font-size:12px;line-height:1.7}
+.eeg-warnings strong{font-size:10px;letter-spacing:1.4px;color:#f0cd9d}
+.eeg-warnings ul{padding-left:20px;margin:10px 0}
+.eeg-warnings li{margin:4px 0}
+.eeg-warnings p{font-size:11px;color:#b7aab7}
+@media(max-width:1050px){
+  .eeg-intro{flex-direction:column;align-items:stretch}
+  .eeg-upload-actions{flex-direction:row;min-width:0;flex-wrap:wrap}
+  .eeg-recording-details{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .eeg-recording-details{grid-template-columns:1fr 1fr}
+  .eeg-controls{align-items:stretch;flex-direction:column}
+  .eeg-stepper{justify-content:space-between}
+  .eeg-stepper span{min-width:0}
+  .eeg-upload-actions{flex-direction:column}
+  .nav{gap:10px;flex-wrap:wrap;justify-content:center}
+  .nav button{font-size:10px}
+}
