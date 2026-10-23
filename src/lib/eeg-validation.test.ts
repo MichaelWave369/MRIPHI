@@ -17,7 +17,7 @@ function fixture() {
     sampleCount: request.sampleCount,
     fftSize: request.fftSize,
     welchSegments: request.welchSegments,
-    bands: request.bands,
+    bands: request.bands.map((band) => ({ ...band })),
     peakFrequencyHz: request.peakFrequencyHz,
     acRms: request.acRms,
     peakToPeak: request.peakToPeak,
