@@ -6,9 +6,51 @@ MRIΦ is a **free, MIT-licensed, local-first neuroimaging explorer** built in Re
 
 > **Important:** MRIPHI is an educational/research exploration project, **not a medical device**. It does not diagnose disease, quantify regional brain volumes, segment anatomical structures, or assess cognition. The sample phantom is computer-generated and is not a human MRI.
 
+## R6 capabilities: Reality Validation (cross-tool verification)
+
+The **03 / EEG → Brainwave Lab → R6 Reality Validation** panel compares MRIΦ's browser-computed channel spectrum against an **independently calculated** MNE-Python reference from a selected EDF file. A matching JSON result is a **numerical cross-check**, not clinical validation, file-authenticity proof, or evidence of anomalous physical coupling.
+
+1. Download an openly licensed compatible EDF recording, for example **PhysioNet EEG Motor Movement/Imagery Database v1.0.0**, baseline S001R01.edf: https://physionet.org/content/eegmmidb/1.0.0/ (PhysioNet license: ODC Attribution 1.0). This is a 64-channel, 160 Hz EEG+ dataset; **EDF annotation channels are excluded** by our reader and timing is treated as continuous. The event labels aren't interpreted. This real-data dataset has not yet been cross-verified by our build.
+2. Open the local EDF in MRIΦ's **03 / EEG** workspace, choose a signal channel, and click **ANALYZE WINDOW**.
+3. In the **R6 Independent Cross-Check** panel, click **EXPORT VERIFICATION REQUEST** to save the aggregates and exact sample window. The request contains no raw signals, patient identifiers, filenames or channel labels.
+4. On your own computer, create a Python environment and install the reference dependencies:
+
+   ```bash
+   python -m venv .venv
+   # Activate .venv as appropriate for your operating system
+   python -m pip install -r scripts/requirements-reference.txt
+   ```
+
+5. From your local checkout of the MRIPHI repository, run this with the **same original EDF**:
+
+   ```bash
+   python scripts/mne_reference.py --edf /path/to/S001R01.edf --request MRIPHI-R6-validation-request.json --out MRIPHI-R6-mne-reference.json
+   ```
+
+6. Use **IMPORT MNE REFERENCE** in the browser to compare sampling rate, channel index, sample range, FFT method/segments, peak frequency, RMS, peak-to-peak and five band-power values. The comparison reports **MATCH** or **DIFFER**; before importing it is explicitly **UNVERIFIED**.
+7. Document the outcome, original dataset citation/version, license, software versions and any mismatches. Neither request nor reference proves it came from a particular input file: confirm file identity manually.
+
+### Why exactly these spectral settings?
+
+MRIΦ R5 uses a **symmetric Hann window** (`N-1` denominator), per-segment mean subtraction, 50% overlapping segments, one-sided Welch PSD, binwise band integration, and an up-to-4-second analysis window. **MNE-Python's default window is Hamming** and SciPy's default Hann is often periodic, so the R6 script explicitly passes `numpy.hanning(n_fft)` to `mne.time_frequency.psd_array_welch`. This avoids silently validating different algorithms.
+
+The comparison uses a **1% relative** tolerance for most numerical outputs (small absolute floors) and requires exact sample count, channel index, FFT size and segment count. It does not prove that identical EDF data were supplied to both tools. A synthetically altered or forged JSON could also match: **the input file and reference provenance are not cryptographically authenticated**.
+
+### Local reference regression tests
+
+```bash
+python -m unittest discover -s scripts -p "test_*.py" -v
+```
+
+The test runner creates its own synthetic EDF in a temporary directory. No patient data, network download, or file upload is required. Both the R6 Python reference workflow and main JavaScript tests must be green before considering the method ready for real recording trials.
+
+### What R6 does not do
+
+No live brain scanning, brain-to-brain coherence test, EEG/MRI source registration, automated artifact suppression, emotional state detection, telepathy test or diagnostic finding. R6 builds the reproducibility layer that **future** validated multichannel methods will need.
+
 ## R5 capabilities: Brainwave Lab
 
-The **03 / EEG** workspace now includes a separate **Brainwave Lab** panel below the original R4 waveforms. Choose a signal channel and press **ANALYZE WINDOW** to run a locally computed, bounded four-second spectral analysis.
+The **03 / EEG** workspace includes a separate **Brainwave Lab** panel below the original R4 waveforms. Choose a signal channel and press **ANALYZE WINDOW** to run a locally computed, bounded four-second spectral analysis.
 
 - **Spectral estimator:** in-browser one-sided **Welch periodogram** with Hann window, per-segment mean removal, up to 4096-point radix-2 FFT, 50% overlap, calibrated physical signal units squared per Hz. The spectrum is plotted in dB **relative to its own peak** for visibility; absolute PSD values and integrated band powers are retained for calculations.
 - **Band powers:** conventional delta (0.5–4 Hz), theta (4–8 Hz), alpha (8–13 Hz), beta (13–30 Hz), gamma (30–45 Hz). Relative percentages are fractions of 0.5–min(45 Hz, Nyquist) integrated power. Bands crossing Nyquist are **N/A**, not silently extrapolated.
@@ -19,7 +61,7 @@ The **03 / EEG** workspace now includes a separate **Brainwave Lab** panel below
 
 **Try it:** select **03 / EEG** → **SYNTHETIC EEG DEMO** → **ANALYZE WINDOW**. Choose SYN-FP2 to observe the artificial 9 Hz peak, which should appear predominantly in the alpha band; this is **not a recording of human brain activity**.
 
-### R6–R7 research direction (not yet implemented)
+### Further R6–R7 roadmap (not yet implemented)
 
 1. Better electrode metadata and carefully validated EEG/MRI coordinate registration, including known geometry and recording synchronization if simultaneous datasets are used.
 2. Pre-registered coherence and information-flow analyses against shuffled, delayed, leakage, and held-out control datasets, with explicit provenance receipts and null outcomes reported.
